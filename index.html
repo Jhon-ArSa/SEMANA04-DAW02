@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agregados Salazar | Venta de Arena, Piedra y Grava en Huancayo</title>
+    
+    <!-- Estilos de la página original -->
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
+
+    <style>
+        /* ==========================================
+           ESTILOS AÑADIDOS PARA LA PRÁCTICA
+        ========================================== */
+        
+        /* Panel flotante de pasos */
+        #panel-pasos {
+            position: fixed;
+            top: 50%;
+            right: 0;
+            transform: translateY(-50%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            padding: 10px 6px;
+            background: rgba(0,0,0,0.8);
+            border-left: 3px solid #ff6b35;
+            border-radius: 12px 0 0 12px;
+            backdrop-filter: blur(5px);
+        }
+        .paso-dot {
+            width: 36px; height: 36px;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 12px; font-weight: bold;
+            color: #ccc; border: 2px solid #555;
+            text-decoration: none; position: relative;
+            transition: 0.3s;
+        }
+        .paso-dot:hover, .paso-dot.active {
+            border-color: #ff6b35; color: #fff; background: #ff6b35;
+        }
+        .paso-dot::before {
+            content: attr(data-label);
+            position: absolute; right: 45px;
+            background: #222; color: #fff;
+            padding: 4px 8px; border-radius: 4px;
+            white-space: nowrap; opacity: 0; pointer-events: none;
+            transition: 0.3s; font-size: 12px;
+        }
+        .paso-dot:hover::before { opacity: 1; }
+
+        /* Paso 1: Ticker Canvas en Inicio */
+        #canvas-ticker {
+            position: absolute; bottom: 0; left: 0; width: 100%; height: 50px;
+            background: rgba(0,0,0,0.6); z-index: 10;
+        }
+
+        /* Paso 2: Carrito flotante en Agregados */
+        #carrito-resumen {
+            background: #f8f9fa; border-left: 4px solid #ff6b35;
+            padding: 15px; margin-bottom: 20px; border-radius: 5px;
+            display: flex; justify-content: space-around; align-items: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .cart-stat { text-align: center; }
+        .cart-stat span { display: block; font-size: 24px; font-weight: bold; color: #ff6b35; }
+        .cart-stat small { color: #666; font-size: 12px; text-transform: uppercase; }
+
+        /* Paso 3: Validación en Contacto */
+        .input-error { border-color: #ef4444 !important; box-shadow: 0 0 0 2px rgba(239,68,68,0.2); }
+        .input-ok { border-color: #22c55e !important; box-shadow: 0 0 0 2px rgba(34,197,94,0.2); }
+        .val-msg { font-size: 12px; margin-top: 5px; display: block; }
+        .val-msg.error { color: #ef4444; }
+        .val-msg.ok { color: #22c55e; }
+
+        /* Paso 4: Canvas Animación en Para Ti */
+        #canvas-animacion {
+            width: 100%; height: 200px;
+            background: #111; border-radius: 10px; margin-top: 20px;
+        }
+
+        /* Paso 5: Monitor de Rendimiento */
+        #monitor-panel {
+            position: fixed; bottom: 20px; left: 20px; z-index: 9999;
+            background: rgba(17, 24, 39, 0.95); color: #fff;
+            padding: 15px; border-radius: 10px; border: 1px solid #374151;
+            display: none; box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        .monitor-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+        .monitor-val { font-size: 20px; font-weight: bold; color: #22c55e; }
+        .btn-monitor { background: #ff6b35; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer;}
+        
+    </style>
+</head>
+<body>
+
+    <!-- PANEL FLOTANTE DE PASOS (Navegación Práctica) -->
+    <nav id="panel-pasos">
+        <a class="paso-dot active" data-step="1" data-label="P1: Canvas Ticker" href="#inicio">P1</a>
+        <a class="paso-dot" data-step="2" data-label="P2: Closures (Carrito)" href="#agregados">P2</a>
+        <a class="paso-dot" data-step="3" data-label="P3: Validación DOM" href="#contacto">P3</a>
+        <a class="paso-dot" data-step="4" data-label="P4: Animación rAF" href="#parati">P4</a>
+        <a class="paso-dot" data-step="5" data-label="P5: Monitor Rendimiento" href="#" onclick="document.getElementById('monitor-panel').style.display='block'; return false;">P5</a>
+    </nav>
+
+    <!-- HEADER ORIGINAL -->
+    <header>
+        <a href="#" class="logo"><i class="ri-home-5-fill"></i> <span> Agregados</span></a>
+        <ul class="navbar">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#agregados">Agregados</a></li>
+            <li><a href="#servicios">Servicios</a></li>
+            <li><a href="#nosotros">Nosotros</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+        </ul>
+        <div class="main">
+            <a href="#contacto" class="user"><i class="ri-arrow-right-down-box-fill"></i> Cotizar</a>
+            <div class="bx bx-menu" id="menu-icon"></div>
+        </div>
+    </header>
+
+    <!-- INICIO (Paso 1 Aplicado aquí) -->
+    <section id="inicio" class="home">
+        <video autoplay muted loop id="video-bg">
+            <source src="agregados1.mp4" type="video/mp4">
+        </video>
+        <div class="home-content">
+            <h1>Bienvenido a Agregados</h1>
+            <p>Ofrecemos los mejores materiales para tus proyectos de construcción.</p>
+            <a href="#contacto" class="btn-cotizar">Cotizar ahora</a>
+        </div>
+        
+        <!-- PASO 1: Canvas Ticker integrado al fondo del header -->
+        <canvas id="canvas-ticker" width="1200" height="50"></canvas>
+    </section>
+
+    <!-- AGREGADOS (Paso 2 Aplicado aquí) -->
+    <section id="agregados" class="agregados">
+        <h2 class="agregados-titulo">Nuestros Agregados</h2>
+        <p class="agregados-descripcion">Ofrecemos una amplia variedad de agregados.</p>
+
+        <!-- PASO 2: Resumen del Carrito (Estado manejado por Closure) -->
+        <div id="carrito-resumen">
+            <div class="cart-stat"><span id="cl-items">0</span><small>Items</small></div>
+            <div class="cart-stat"><span id="cl-m3">0.0</span><small>m³ Total</small></div>
+            <div class="cart-stat"><span id="cl-total">S/. 0.00</span><small>Total Estimado</small></div>
+            <button id="btn-vaciar" class="btn-cotizar" style="padding: 8px 15px; font-size: 14px;">Vaciar Carrito</button>
+        </div>
+
+        <div class="agregados-contenedor" id="grid-productos">
+            <!-- Tarjetas modificadas para usar el carrito -->
+            <div class="agregado-card" data-nombre="Arena Fina" data-precio="45">
+                <img src="img/arenafina.png" alt="Arena fina" class="agregado-imagen">
+                <div class="agregado-info">
+                    <h3>Arena Fina (S/.45/m³)</h3>
+                    <p>Utilizada para acabados en construcción.</p>
+                    <input type="number" class="m3-input" value="1" min="1" style="width:60px; margin-bottom:10px;"> m³
+                    <button class="agregado-boton btn-pedir">Añadir al Carrito</button>
+                </div>
+            </div>
+            <div class="agregado-card" data-nombre="Arena Gruesa" data-precio="40">
+                <img src="img/arena-gruesa.jpg" alt="Arena gruesa" class="agregado-imagen">
+                <div class="agregado-info">
+                    <h3>Arena Gruesa (S/.40/m³)</h3>
+                    <p>Se usa para concreto y cimientos.</p>
+                    <input type="number" class="m3-input" value="1" min="1" style="width:60px; margin-bottom:10px;"> m³
+                    <button class="agregado-boton btn-pedir">Añadir al Carrito</button>
+                </div>
+            </div>
+            <div class="agregado-card" data-nombre="Piedra Chancada" data-precio="65">
+                <img src="img/piedra-chancada.jpg" alt="Piedra Chancada" class="agregado-imagen">
+                <div class="agregado-info">
+                    <h3>Piedra Chancada (S/.65/m³)</h3>
+                    <p>En concreto armado y bases.</p>
+                    <input type="number" class="m3-input" value="1" min="1" style="width:60px; margin-bottom:10px;"> m³
+                    <button class="agregado-boton btn-pedir">Añadir al Carrito</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- COBERTURA, SERVICIOS, NOSOTROS, TESTIMONIOS (Omitidos por brevedad pero estructura normal) -->
+    <!-- ... -->
+
+    <!-- PARA TI (Paso 4 Aplicado aquí) -->
+    <section class="para-ti" id="parati"> 
+        <h2 class="para-ti-titulo">Para Ti</h2>
+        <p class="para-ti-subtitulo">Soluciones pensadas para cada etapa de tu proyecto</p>
+        
+        <!-- PASO 4: Animación rAF -->
+        <div style="text-align: center; margin-bottom: 20px;">
+            <p><strong>Demostración Interactiva de Materiales:</strong></p>
+            <button id="btn-anim-play" class="btn-monitor">▶ Reproducir Animación</button>
+            <button id="btn-anim-pause" class="btn-monitor" style="background:#ef4444;">⏸ Pausar</button>
+            <canvas id="canvas-animacion" width="800" height="250"></canvas>
+        </div>
+
+        <div class="para-ti-bloque">
+            <div class="para-ti-texto">
+                <h3>Materiales de Calidad</h3>
+                <p>Arena gruesa, arena fina, confitillo seleccionados.</p>
+            </div>
+            <div class="para-ti-imagen"><img src="img/costruccion.jpg" alt=""></div>
+        </div>
+    </section>
+
+    <!-- CONTACTO (Paso 3 Aplicado aquí) -->
+    <section class="contacto" id="contacto">
+        <h2 class="contacto-titulo">Contáctanos</h2>
+        <p class="contacto-descripcion">Estamos listos para ayudarte. Completa el formulario y validaremos tus datos en tiempo real.</p>
+        
+        <div class="contacto-contenedor">
+            <div class="contacto-card" style="width: 100%; max-width: 600px; margin: auto;">
+                <!-- PASO 3: Formulario con Validación DOM -->
+                <form id="form-cotizacion" style="display: flex; flex-direction: column; gap: 15px;">
+                    <div>
+                        <input type="text" id="val-nombre" placeholder="Nombre completo" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                        <span id="msg-nombre" class="val-msg"></span>
+                    </div>
+                    <div>
+                        <input type="text" id="val-dni" placeholder="DNI (8 dígitos)" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                        <span id="msg-dni" class="val-msg"></span>
+                    </div>
+                    <div>
+                        <input type="text" id="val-tel" placeholder="Teléfono (9 dígitos)" style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;">
+                        <span id="msg-tel" class="val-msg"></span>
+                    </div>
+                    <button type="submit" class="btn-cotizar" style="width:100%; border:none; cursor:pointer;">Enviar Cotización</button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- PASO 5: Monitor de Rendimiento (Flotante) -->
+    <div id="monitor-panel">
+        <h4 style="margin-bottom:10px; border-bottom:1px solid #555; padding-bottom:5px;">⚙️ Monitor de Rendimiento</h4>
+        <div class="monitor-grid">
+            <div><span class="monitor-val" id="mon-fps">0</span><br><small>FPS</small></div>
+            <div><span class="monitor-val" id="mon-mem">0</span><br><small>Memoria (MB)</small></div>
+            <div><span class="monitor-val" id="mon-nodes" style="color:#f97316;">0</span><br><small>Nodos DOM</small></div>
+        </div>
+        <button onclick="document.getElementById('monitor-panel').style.display='none'" class="btn-monitor" style="width:100%; margin-top:10px;">Cerrar</button>
+    </div>
+
+    <!-- Scripts -->
+    <script src="script.js"></script>
+    <script src="js/app.js" defer></script>
+</body>
+</html>
